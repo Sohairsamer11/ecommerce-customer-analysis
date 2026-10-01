@@ -2,6 +2,7 @@
 An end-to-end customer analytics project: data cleaning and exploratory analysis in Python, followed by an interactive Streamlit dashboard that turns the findings into something a business team can explore.
 
 [View the Interactive Streamlit Dashboard](https://ecommerce-customer-analysis-sohair.streamlit.app/)
+
 📌 Project Overview
 
 An e-commerce business wants to understand who its customers are, how they behave, and which customers create the most value. This project analyzes a dataset of 10,000 customers (23 features covering demographics, purchasing behavior, marketing engagement, and customer experience) to answer questions such as:
