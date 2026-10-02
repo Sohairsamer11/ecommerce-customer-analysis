@@ -397,7 +397,7 @@ if income_filter != "All":
 # Customer Type
 # -------------------------
 
-if customer_type_filter == "Non Repeat Customer":
+if customer_type_filter == "Non-Repeat Customer":
 
     filtered_df = filtered_df[
         filtered_df["RepeatCustomerFlag"] == 0
