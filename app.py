@@ -25,6 +25,7 @@ GOLD = "#C4A352"
 LIGHT_BG = "#F7F8FA"
 WHITE = "#FFFFFF"
 TEXT = "#1F2937"
+ORANGE = "#F2842F"
 
 
 # =========================================================
@@ -174,6 +175,36 @@ st.markdown(
         margin-bottom: 15px;
     }}
 
+    /* Smooth scrolling for sidebar navigation */
+    html, section.main, div[data-testid="stMain"],
+    div[data-testid="stAppViewContainer"] {{
+        scroll-behavior: smooth;
+    }}
+
+    .section-title {{
+        scroll-margin-top: 20px;
+    }}
+
+    /* Sidebar navigation buttons */
+    a.nav-link {{
+        display: block;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin: 10px 0;
+        text-align: center;
+        font-size: 15px;
+        text-decoration: none !important;
+        background-color: rgba(255, 255, 255, 0.05);
+        transition: all 0.2s ease;
+    }}
+
+    a.nav-link:hover {{
+        background-color: {ORANGE};
+        border-color: {ORANGE};
+        transform: translateX(3px);
+    }}
+
     </style>
     """,
     unsafe_allow_html=True
@@ -213,31 +244,18 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Sidebar menu items
-    menu_items = [
-        "🏠 Overview",
-        "👥 Customer Analysis",
-        "🌍 Geographic Analysis",
-        "📊 Customer Segmentation",
-        "💡 Key Insights"
-    ]
+    # Sidebar menu items (label -> section anchor id)
+    menu_items = {
+        "🏠 Overview": "overview",
+        "👥 Customer Analysis": "customer-analysis",
+        "🌍 Geographic Analysis": "geographic-analysis",
+        "📊 Customer Segmentation": "customer-segmentation",
+        "💡 Key Insights": "key-insights"
+    }
 
-    for item in menu_items:
+    for label, anchor in menu_items.items():
         st.markdown(
-            f"""
-            <div style="
-                border: 1px solid rgba(255, 255, 255, 0.25);
-                border-radius: 8px;
-                padding: 10px 12px;
-                margin: 10px 0;
-                text-align: center;
-                font-size: 15px;
-                color: white;
-                background-color: rgba(255, 255, 255, 0.05);
-            ">
-                {item}
-            </div>
-            """,
+            f'<a class="nav-link" href="#{anchor}" target="_self">{label}</a>',
             unsafe_allow_html=True
         )
 
@@ -415,7 +433,7 @@ elif customer_type_filter == "Repeat Customer":
 # =========================================================
 
 st.markdown(
-    '<div class="section-title">Key Performance Indicators</div>',
+    '<div id="overview" class="section-title">Key Performance Indicators</div>',
     unsafe_allow_html=True
 )
 
@@ -496,7 +514,7 @@ with col4:
 # =========================================================
 
 st.markdown(
-    '<div class="section-title">Customer Analysis</div>',
+    '<div id="customer-analysis" class="section-title">Customer Analysis</div>',
     unsafe_allow_html=True
 )
 
@@ -526,6 +544,9 @@ with col1:
         "Customers"
     ]
 
+    # Sort from smallest to largest
+    gender_data = gender_data.sort_values("Customers", ascending=True)
+
     fig_gender = px.pie(
         gender_data,
         names="Gender",
@@ -541,6 +562,7 @@ with col1:
     )
 
     fig_gender.update_traces(
+        sort=False,
         textposition="inside",
         textinfo="percent+label",
         hovertemplate=(
@@ -601,6 +623,9 @@ with col2:
 
     age_counts.columns = ["Age Group", "Number of Customers"]
 
+    # Sort from smallest to largest
+    age_counts = age_counts.sort_values("Number of Customers", ascending=True)
+
     fig_age = px.bar(
         age_counts,
         x="Age Group",
@@ -640,15 +665,7 @@ with col2:
 
         xaxis=dict(
             categoryorder="array",
-            categoryarray=[
-                "Under 18",
-                "18–24",
-                "25–34",
-                "35–44",
-                "45–54",
-                "55–64",
-                "65+"
-            ],
+            categoryarray=age_counts["Age Group"].astype(str).tolist(),
             tickangle=0
         ),
 
@@ -731,7 +748,8 @@ with col1:
     )
 
     frequency_data = frequency_data.sort_values(
-        "Purchase Frequency"
+        "Average Order Value",
+        ascending=True
     )
 
     # Create horizontal bar chart
@@ -828,6 +846,9 @@ with col2:
         "Social Media Engagement"
     ]
 
+    # Sort from smallest to largest
+    engagement_data = engagement_data.sort_values("Average", ascending=True)
+
     fig_engagement = px.pie(
         engagement_data,
         names="Metric",
@@ -841,6 +862,7 @@ with col2:
     )
 
     fig_engagement.update_traces(
+        sort=False,
         textposition="inside",
         texttemplate="%{percent:.1%}",
         hovertemplate=(
@@ -919,6 +941,9 @@ with col1:
         "Usage Level",
         "Customers"
     ]
+
+    # Sort from smallest to largest
+    mobile_data = mobile_data.sort_values("Customers", ascending=True)
 
     fig_mobile = px.bar(
         mobile_data,
@@ -1048,6 +1073,12 @@ with col2:
         for interval in satisfaction_counts["Satisfaction Range"]
     ]
 
+    # Sort from smallest to largest
+    satisfaction_counts = satisfaction_counts.sort_values(
+        "Customers",
+        ascending=True
+    )
+
     # -----------------------------------------------------
     # Satisfaction bar chart
     # -----------------------------------------------------
@@ -1133,7 +1164,7 @@ with col2:
 # =========================================================
 
 st.markdown(
-    '<div class="section-title">Geographic Analysis</div>',
+    '<div id="geographic-analysis" class="section-title">Geographic Analysis</div>',
     unsafe_allow_html=True
 )
 
@@ -1159,6 +1190,7 @@ with col1:
             .dropna()
             .value_counts()
             .head(10)
+            .sort_values(ascending=True)
             .reset_index()
         )
 
@@ -1327,7 +1359,8 @@ with col2:
     )
 
     income_data = income_data.sort_values(
-        "Income Level"
+        "Customers",
+        ascending=True
     )
 
     # =====================================================
@@ -1430,7 +1463,7 @@ with col2:
             showgrid=False,
 
             categoryorder="array",
-            categoryarray=income_order
+            categoryarray=income_data["Income Level"].astype(str).tolist()
         ),
 
         showlegend=False,
@@ -1456,7 +1489,7 @@ with col2:
 # =========================================================
 
 st.markdown(
-    '<div class="section-title">Customer Segmentation</div>',
+    '<div id="customer-segmentation" class="section-title">Customer Segmentation</div>',
     unsafe_allow_html=True
 )
 
@@ -1638,6 +1671,8 @@ with col1:
         ]
     })
 
+    segmentation_data = segmentation_data.sort_values("Customers", ascending=True)
+
     fig_segmentation = px.bar(
         segmentation_data,
         x="Customers",
@@ -1772,6 +1807,8 @@ with col2:
         ]
     })
 
+    premium_data = premium_data.sort_values("Customers", ascending=True)
+
     fig_premium = px.bar(
         premium_data,
         x="Customers",
@@ -1860,7 +1897,7 @@ st.markdown(
 # =========================================================
 
 st.markdown(
-    '<div class="section-title">Key Business Insights</div>',
+    '<div id="key-insights" class="section-title">Key Business Insights</div>',
     unsafe_allow_html=True
 )
 
